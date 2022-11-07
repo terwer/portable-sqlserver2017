@@ -1,5 +1,5 @@
-# docker-compose up --build
-# docker-compose up -d --build
+# docker compose up --build
+# docker compose up -d --build
 
 # MSSQL_PID is the Product ID (PID) or Edition that the container will run with. Acceptable values:
 # Developer : This will run the container using the Developer Edition (this is the default if no MSSQL_PID environment variable is supplied)
@@ -8,7 +8,7 @@
 # Enterprise : This will run the container using the Enterprise Edition
 # EnterpriseCore : This will run the container using the Enterprise Edition Core
 
-version: '3'
+version: "3.9"
 services:
   portable-sqlserver2017:
     stdin_open: true
@@ -23,10 +23,16 @@ services:
     environment:
      - "TZ=Asia/Shanghai"
      - "ACCEPT_EULA=Y"
-     - "MSSQL_SA_PASSWORD=123456"
+     - "MSSQL_SA_PASSWORD=TESTtyw@123456"
      - "MSSQL_PID=Developer"
     volumes:
       - ./data/db:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
     restart: "no"
     networks:
       - local-dev
